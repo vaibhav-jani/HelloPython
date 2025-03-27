@@ -18,7 +18,13 @@ def demonstrate_basic_type_hints():
     # Using the functions
     print(f"Greeting: {greet('Alice')}")
     print(f"Sum: {add(5, 3)}")
-    print(f"Processed data: {process_data("Z42")}")
+
+    # Using process_data with different types
+    print("\nUsing process_data with different types:")
+    print(f"With integer: {process_data(42)}")
+    print(f"With string: {process_data('Hello World')}")
+    print(f"With string number: {process_data('123')}")
+    print(f"With empty string: {process_data('')}")
 
 
 def demonstrate_generic_classes():
