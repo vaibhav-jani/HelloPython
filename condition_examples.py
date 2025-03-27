@@ -64,6 +64,7 @@ def demonstrate_logical_operators_in_conditions():
 def demonstrate_conditional_expressions():
     print("\n=== Conditional Expressions (Ternary Operator) ===")
     age = 20
+    score = 85
 
     # Basic ternary
     status = "adult" if age >= 18 else "minor"
