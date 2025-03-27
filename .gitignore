@@ -1,0 +1,11 @@
+# Virtual environment
+venv/
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+.env
+.idea/
+.vscode/
+.DS_Store 
