@@ -46,18 +46,64 @@ def demonstrate_file_operations():
         test_dir = current_dir / 'test_dir'
         test_dir.mkdir(exist_ok=True)
 
-        # Create a file in the test directory
-        test_file = test_dir / 'test.txt'
-        test_file.write_text('Test content')
+        # Create multiple files in the test directory
+        files = {
+            'test1.txt': 'This is test file 1 content',
+            'test2.txt': 'This is test file 2 content',
+            'subdir': {
+                'test3.txt': 'This is test file 3 content',
+                'test4.txt': 'This is test file 4 content'
+            }
+        }
 
-        # List directory contents
-        print("\nDirectory contents:")
-        for item in test_dir.iterdir():
-            print(f"- {item.name}")
+        # Create files and subdirectories
+        for name, content in files.items():
+            if isinstance(content, dict):
+                # Create subdirectory
+                subdir = test_dir / name
+                subdir.mkdir(exist_ok=True)
+                # Create files in subdirectory
+                for subname, subcontent in content.items():
+                    (subdir / subname).write_text(subcontent)
+            else:
+                # Create file
+                (test_dir / name).write_text(content)
 
-        # Clean up
-        test_file.unlink()
-        test_dir.rmdir()
+        # Function to print directory structure with indentation
+        def print_directory_structure(path: Path, level: int = 0):
+            indent = "  " * level
+            print(f"{indent}📁 {path.name}/")
+
+            # Print files first
+            for item in sorted(path.iterdir()):
+                if item.is_file():
+                    print(f"{indent}  📄 {item.name}")
+                    # Print file content with additional indentation
+                    try:
+                        content = item.read_text()
+                        print(f"{indent}    Content: {content}")
+                    except Exception as e:
+                        print(f"{indent}    Error reading file: {e}")
+
+            # Then print directories
+            for item in sorted(path.iterdir()):
+                if item.is_dir():
+                    print_directory_structure(item, level + 1)
+
+        # Print the directory structure
+        print("\nDirectory structure with contents:")
+        print_directory_structure(test_dir)
+
+        # Clean up recursively
+        def remove_directory(path: Path):
+            if path.is_file():
+                path.unlink()
+            else:
+                for item in path.iterdir():
+                    remove_directory(item)
+                path.rmdir()
+
+        remove_directory(test_dir)
 
     # Example 3: File Modes and Context Managers
     def file_modes_and_context():
