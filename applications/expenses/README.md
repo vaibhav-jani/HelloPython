@@ -56,4 +56,4 @@ python src/expense_manager.py
 
 ## Data Storage
 
-Expenses are stored in `expenses.json` in the same directory as the script. 
+Expenses are stored in `expenses.json` in the `applications/expenses` directory. The file is automatically created when you add your first expense. 

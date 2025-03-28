@@ -11,8 +11,10 @@ class Expense:
 
 
 class ExpenseManager:
-    def __init__(self, file_path: str = "expenses.json"):
-        self.file_path = Path(file_path)
+    def __init__(self):
+        # Get the application root directory (applications/expenses)
+        self.root_dir = Path(__file__).parent.parent
+        self.file_path = self.root_dir / "expenses.json"
         self.expenses: List[Expense] = []
         self.load_expenses()
 

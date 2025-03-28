@@ -1,0 +1,22 @@
+[
+  {
+    "name": "foo",
+    "price": 1.12
+  },
+  {
+    "name": "Bar",
+    "price": 1.534
+  },
+  {
+    "name": "foobar",
+    "price": 23.2
+  },
+  {
+    "name": "foobardoo",
+    "price": 23.23
+  },
+  {
+    "name": "foobardoodoo",
+    "price": 23.23
+  }
+]
