@@ -23,7 +23,7 @@ This directory contains examples demonstrating core Python language features and
    - `oop_examples.py`: Object-Oriented Programming concepts
 
 5. **File Operations**
-   - `file_examples.py`: File handling, reading, writing, and directory operations
+   - `file_examples.py`: File handling, I/O operations, and path management
 
 ## How to Use
 
