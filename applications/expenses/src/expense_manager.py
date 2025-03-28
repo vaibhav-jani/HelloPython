@@ -47,6 +47,8 @@ class ExpenseManager:
 
     def update_expense(self, index: int, name: Optional[str] = None, price: Optional[float] = None) -> None:
         """Update an existing expense."""
+        # Convert 1-based index to 0-based index
+        index = index - 1
         if 0 <= index < len(self.expenses):
             expense = self.expenses[index]
             if name is not None:
@@ -60,6 +62,8 @@ class ExpenseManager:
 
     def delete_expense(self, index: int) -> None:
         """Delete an expense by index."""
+        # Convert 1-based index to 0-based index
+        index = index - 1
         if 0 <= index < len(self.expenses):
             expense = self.expenses.pop(index)
             self.save_expenses()
@@ -75,7 +79,7 @@ class ExpenseManager:
 
         print("\nExpense List:")
         print("-" * 40)
-        for i, expense in enumerate(self.expenses):
+        for i, expense in enumerate(self.expenses, start=1):
             print(f"{i}. {expense.name} - ${expense.price:.2f}")
 
         total = sum(expense.price for expense in self.expenses)
@@ -96,8 +100,8 @@ class ExpenseManager:
 
         print(f"\nExpenses matching '{query}':")
         print("-" * 40)
-        for expense in matching_expenses:
-            print(f"{expense.name} - ${expense.price:.2f}")
+        for i, expense in enumerate(matching_expenses, start=1):
+            print(f"{i}. {expense.name} - ${expense.price:.2f}")
 
         total = sum(expense.price for expense in matching_expenses)
         print("-" * 40)
@@ -130,7 +134,8 @@ def main():
         elif choice == "2":
             manager.list_expenses()
             try:
-                index = int(input("\nEnter index to update: "))
+                index = int(
+                    input("\nEnter index to update (1-{}): ".format(len(manager.expenses))))
                 name = input("Enter new name (press Enter to skip): ").strip()
                 price_str = input(
                     "Enter new price (press Enter to skip): ").strip()
@@ -145,7 +150,8 @@ def main():
         elif choice == "3":
             manager.list_expenses()
             try:
-                index = int(input("\nEnter index to delete: "))
+                index = int(
+                    input("\nEnter index to delete (1-{}): ".format(len(manager.expenses))))
                 manager.delete_expense(index)
             except ValueError:
                 print("Invalid index!")
