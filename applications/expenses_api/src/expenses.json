@@ -14,5 +14,9 @@
   {
     "name": "Popcorn",
     "price": 2.0
+  },
+  {
+    "name": "Foobar",
+    "price": 23.0
   }
 ]

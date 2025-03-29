@@ -65,7 +65,7 @@ python -m src.client.client
 
 You can also use the main script to run both server and client:
 ```bash
-python -m src.main
+python -m main
 ```
 
 ## API Endpoints

@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from typing import List
 import json
 from pathlib import Path
-from models import Expense
+from ..models import Expense
 
 app = Flask(__name__)
 

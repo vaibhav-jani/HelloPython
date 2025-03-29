@@ -5,18 +5,18 @@ import time
 def run_server():
     """Run the server."""
     print("Starting server...")
-    subprocess.run(["python", "-m", "server.server"], check=True)
+    subprocess.run(["python", "-m", "src.server.server"], check=True)
 
 
 def run_client():
     """Run the client."""
     print("Starting client...")
-    subprocess.run(["python", "-m", "client.client"], check=True)
+    subprocess.run(["python", "-m", "src.client.client"], check=True)
 
 
 if __name__ == "__main__":
     # Run the server in the background
-    server_process = subprocess.Popen(["python", "-m", "server.server"])
+    server_process = subprocess.Popen(["python", "-m", "src.server.server"])
 
     # Wait a moment for the server to start
     time.sleep(2)
