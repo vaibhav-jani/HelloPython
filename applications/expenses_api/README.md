@@ -45,27 +45,27 @@ pip install -r requirements.txt
 
 ## Running the Application
 
-### Using the Main Script (Recommended)
+### Start the Server
 
 From the `expenses_api` directory:
 ```bash
-python src/main.py
+python -m src.server.server
 ```
 
-This will start both the server and client.
+The server will start on http://localhost:5000
 
-### Running Server and Client Separately
+### Run the Client
 
-1. Start the server (in one terminal):
+In a new terminal, from the `expenses_api` directory:
 ```bash
-cd applications/expenses_api
-python src/main.py server
+python -m src.client.client
 ```
 
-2. Run the client (in another terminal):
+### Using the Main Script
+
+You can also use the main script to run both server and client:
 ```bash
-cd applications/expenses_api
-python src/main.py client
+python -m src.main
 ```
 
 ## API Endpoints
