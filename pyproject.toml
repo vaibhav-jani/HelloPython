@@ -8,6 +8,7 @@ packages = [{include = "hello_python"}]
 
 [tool.poetry.dependencies]
 python = ">=3.8.1"
+pytz = "^2025.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.0"
