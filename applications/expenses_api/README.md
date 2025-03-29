@@ -1,56 +1,72 @@
-# Expense Manager API
+# Expense Management API
 
-A RESTful API application demonstrating how to build and consume web services in Python.
+A simple expense management system with a REST API server and command-line client.
+
+## Project Structure
+
+```
+expenses_api/
+├── src/
+│   ├── client/           # Client package
+│   │   ├── __init__.py
+│   │   └── client.py     # Command-line client implementation
+│   ├── server/          # Server package
+│   │   ├── __init__.py
+│   │   └── server.py    # Flask server implementation
+│   ├── models/          # Shared models package
+│   │   ├── __init__.py
+│   │   └── expense.py   # Expense data model
+│   ├── main.py         # Main entry point
+│   └── expenses.json   # Data storage
+├── requirements.txt    # Project dependencies
+└── README.md          # This file
+```
 
 ## Features
 
-- RESTful API server using Flask
-- REST client using requests library
-- CRUD operations for expenses
-- Search functionality
-- Persistent storage using JSON
-- Error handling and validation
-
-## Requirements
-
-- Python 3.6 or higher
-- Flask
-- requests
+- Add, update, delete, and list expenses
+- Search expenses by name
+- Persistent storage using JSON file
+- RESTful API with Flask
+- Command-line client interface
 
 ## Installation
 
-1. Clone the repository
+1. Create a virtual environment (recommended):
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
 2. Install dependencies:
-   ```bash
-   pip install flask requests
-   ```
+```bash
+pip install -r requirements.txt
+```
 
-## Usage
+## Running the Application
 
-### Starting the Server
+### Start the Server
 
-1. Navigate to the API directory:
-   ```bash
-   cd applications/expense_api
-   ```
+From the `expenses_api` directory:
+```bash
+python -m src.server.server
+```
 
-2. Start the server:
-   ```bash
-   python src/mock_server.py
-   ```
-   The server will run on http://localhost:5000
+The server will start on http://localhost:5000
 
-### Using the Client
+### Run the Client
 
-1. In a new terminal, navigate to the API directory:
-   ```bash
-   cd applications/expense_api
-   ```
+In a new terminal, from the `expenses_api` directory:
+```bash
+python -m src.client.client
+```
 
-2. Run the client:
-   ```bash
-   python src/expense_client.py
-   ```
+### Using the Main Script
+
+You can also use the main script to run both server and client:
+```bash
+python -m src.main
+```
 
 ## API Endpoints
 
@@ -60,30 +76,16 @@ A RESTful API application demonstrating how to build and consume web services in
 - `DELETE /api/expenses/<index>` - Delete an expense
 - `GET /api/expenses/search?q=<query>` - Search expenses by name
 
-## Example API Usage
+## Data Model
 
 ```python
-# Using curl
-# List expenses
-curl http://localhost:5000/api/expenses
-
-# Add expense
-curl -X POST http://localhost:5000/api/expenses \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Groceries", "price": 50.25}'
-
-# Update expense
-curl -X PUT http://localhost:5000/api/expenses/0 \
-  -H "Content-Type: application/json" \
-  -d '{"price": 55.00}'
-
-# Delete expense
-curl -X DELETE http://localhost:5000/api/expenses/0
-
-# Search expenses
-curl http://localhost:5000/api/expenses/search?q=groceries
+@dataclass
+class Expense:
+    name: str
+    price: float
 ```
 
-## Data Storage
+## Dependencies
 
-Expenses are stored in `expenses.json` in the `applications/expense_api` directory. 
+- Flask 3.0.2
+- Requests 2.31.0 
