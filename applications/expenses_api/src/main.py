@@ -1,5 +1,11 @@
 import subprocess
+import sys
+from pathlib import Path
 import time
+
+# Add the parent directory to Python path
+parent_dir = Path(__file__).parent.parent
+sys.path.append(str(parent_dir))
 
 
 def run_server():
@@ -15,8 +21,8 @@ def run_client():
 
 
 if __name__ == "__main__":
-    # Run the server in the background
-    server_process = subprocess.Popen(["python", "-m", "server.server"])
+    # Run server in a separate process
+    subprocess.run(["python", "-m", "src.server.server"], check=True)
 
     # Wait a moment for the server to start
     time.sleep(2)
