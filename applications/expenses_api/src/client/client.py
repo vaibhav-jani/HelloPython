@@ -3,16 +3,12 @@ from dataclasses import dataclass
 from typing import List, Optional, Dict, Any
 import json
 from pathlib import Path
-
-
-@dataclass
-class Expense:
-    name: str
-    price: float
+from datetime import datetime
+from models import Expense
 
 
 class ExpenseClient:
-    def __init__(self, base_url: str = "http://127.0.0.1:5000"):
+    def __init__(self, base_url: str = " http://127.0.0.1:5000"):
         self.base_url = base_url.rstrip('/')
         self.session = requests.Session()
 

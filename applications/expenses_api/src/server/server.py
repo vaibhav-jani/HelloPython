@@ -1,16 +1,10 @@
 from flask import Flask, request, jsonify
-from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
 import json
 from pathlib import Path
+from models import Expense
 
 app = Flask(__name__)
-
-
-@dataclass
-class Expense:
-    name: str
-    price: float
 
 
 class ExpenseStore:
@@ -112,5 +106,9 @@ def search_expenses():
     return jsonify([vars(expense) for expense in matching_expenses])
 
 
-if __name__ == '__main__':
+def main():
     app.run(debug=True, port=5000)
+
+
+if __name__ == '__main__':
+    main()

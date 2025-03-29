@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Blue pill",
+    "price": 2.0
+  },
+  {
+    "name": "Red Pill",
+    "price": 3.5
+  },
+  {
+    "name": "Matrix movie ticket",
+    "price": 3.0
+  },
+  {
+    "name": "Popcorn",
+    "price": 2.0
+  }
+]
