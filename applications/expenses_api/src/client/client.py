@@ -4,7 +4,7 @@ from typing import List, Optional, Dict, Any
 import json
 from pathlib import Path
 from datetime import datetime
-from models import Expense
+from ..models import Expense
 
 
 class ExpenseClient:
