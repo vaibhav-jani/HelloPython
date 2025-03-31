@@ -11,6 +11,8 @@ import pygame
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+import select
+import sys
 
 
 @dataclass
@@ -32,6 +34,7 @@ class Alarm:
             return False
 
         current_time = datetime.now()
+
         if self.repeat_days:
             # For repeating alarms, check if current day is in repeat_days
             return (current_time.hour == self.time.hour and
@@ -51,14 +54,31 @@ class AlarmClock:
         self.running = False
         self.alarm_thread: Optional[threading.Thread] = None
         self.sound_thread: Optional[threading.Thread] = None
-        # Initialize pygame mixer
-        pygame.mixer.init()
+        # Track currently playing alarm
+        self.current_alarm: Optional[str] = None
+        # Track stopped alarms and when they were stopped
+        self.stopped_alarms: Dict[str, datetime] = {}
+        # Initialize pygame mixer only when needed
+        self._init_mixer()
 
-    def add_alarm(self, time_str: str, description: str,
-                  repeat_days: List[int] = None, sound_file: str = None) -> str:
+    def _init_mixer(self):
+        """Initialize pygame mixer if not already initialized."""
+        try:
+            if not pygame.mixer.get_init():
+                pygame.mixer.init()
+        except Exception as e:
+            print(f"Warning: Could not initialize sound system: {e}")
+
+    def add_alarm(self,
+                  time_str: str,
+                  description: str,
+                  repeat_days: List[int] = None,
+                  sound_file: str = None
+                  ) -> str:
         """Add a new alarm to the system."""
         try:
             # Parse time string (supports both 24h and 12h formats)
+            # Only minutes accuracy, don;t count seconds
             alarm_time = datetime.strptime(time_str, "%H:%M")
             if alarm_time < datetime.now():
                 alarm_time += timedelta(days=1)
@@ -73,7 +93,7 @@ class AlarmClock:
             return alarm_id
         except ValueError:
             raise ValueError(
-                "Invalid time format. Use HH:MM (24h) or HH:MM AM/PM (12h)")
+                "Invalid time format ${time_str}. Use HH:MM (24h) or HH:MM AM/PM (12h)")
 
     def remove_alarm(self, alarm_id: str) -> bool:
         """Remove an alarm by its ID."""
@@ -98,7 +118,8 @@ class AlarmClock:
                 "description": alarm.description,
                 "is_active": alarm.is_active,
                 "repeat_days": [self._get_day_name(day) for day in alarm.repeat_days],
-                "sound_file": alarm.sound_file
+                "sound_file": alarm.sound_file,
+                "status": self._get_alarm_status(alarm_id)
             }
             for alarm_id, alarm in self.alarms.items()
         ]
@@ -109,9 +130,10 @@ class AlarmClock:
                 "Friday", "Saturday", "Sunday"]
         return days[day_num]
 
-    def _play_sound(self, sound_file: str = None):
+    def _play_sound(self, sound_file: str = None, alarm_id: str = None):
         """Play the alarm sound using pygame."""
         try:
+            self._init_mixer()  # Ensure mixer is initialized before playing
             if sound_file and os.path.exists(sound_file):
                 # Load and play the sound file
                 pygame.mixer.music.load(sound_file)
@@ -119,10 +141,9 @@ class AlarmClock:
                 # Wait for the sound to finish or key press
                 while pygame.mixer.music.get_busy():
                     pygame.time.Clock().tick(10)
-                    # Check for key press to stop sound
-                    if self._check_key_press():
+                    if select.select([sys.stdin], [], [], 0.0)[0]:
                         pygame.mixer.music.stop()
-                        break
+
             else:
                 # Create a simple beep sound using pygame's built-in sound
                 sample_rate = 44100
@@ -144,33 +165,48 @@ class AlarmClock:
                 # Wait for the sound to finish or key press
                 start_time = pygame.time.get_ticks()
                 while pygame.time.get_ticks() - start_time < int(duration * 1000):
-                    if self._check_key_press():
+                    if select.select([sys.stdin], [], [], 0.0)[0]:
                         sound.stop()
-                        break
                     pygame.time.Clock().tick(10)
         except Exception as e:
             print(f"Error playing sound: {e}")
             # Fallback to terminal bell
             print("\a")
 
-    def _check_key_press(self) -> bool:
-        """Check if any key is pressed."""
+    def stop_sound(self) -> bool:
+        """Stop the currently playing sound."""
         try:
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    return True
+            self._init_mixer()  # Ensure mixer is initialized before stopping
+            if pygame.mixer.music.get_busy():
+                pygame.mixer.music.stop()
+
+                return True
             return False
-        except:
+        except Exception as e:
+            print(f"Error stopping sound: {e}")
             return False
 
     def _check_alarms(self):
         """Background thread to check and trigger alarms."""
         while self.running:
             current_time = datetime.now()
+            # Print current time with carriage return to update in place
+            print(
+                f"\rCurrent Time: {current_time.strftime('%H:%M:%S')}", end="", flush=True)
+
             for alarm_id, alarm in self.alarms.items():
+
+                # Skip if alarm was recently stopped
+                if alarm_id in self.stopped_alarms:
+                    continue
+
                 if alarm.should_trigger():
+                    # Set current alarm
+                    self.current_alarm = alarm_id
+                    # Print alarm message on a new line
                     print(f"\nALARM: {alarm.description}")
-                    self._play_sound(alarm.sound_file)
+                    # Play sound in the main thread to allow key press detection
+                    self._play_sound(alarm.sound_file, alarm_id)
             time.sleep(1)
 
     def start(self):
@@ -180,15 +216,48 @@ class AlarmClock:
             self.alarm_thread = threading.Thread(target=self._check_alarms)
             self.alarm_thread.daemon = True
             self.alarm_thread.start()
-            print("Alarm clock started. Press Ctrl+C to stop.")
+            print("\nAlarm clock started. Press Ctrl+C to stop.")
+            print("Current Time: ", end="", flush=True)
+
+            # Initialize pygame mixer only when needed
+            self._init_mixer()
 
     def stop(self):
         """Stop the alarm clock system."""
         self.running = False
+        # Stop any currently playing sound
+        try:
+            if pygame.mixer.get_init():
+                pygame.mixer.music.stop()
+                if self.current_alarm:
+                    self.stopped_alarms[self.current_alarm] = datetime.now()
+                self.current_alarm = None
+        except:
+            pass
+
+        # Wait for the alarm thread to finish
         if self.alarm_thread:
             self.alarm_thread.join()
-        pygame.mixer.quit()
-        print("Alarm clock stopped.")
+            self.alarm_thread = None
+
+        # Clean up pygame mixer
+        try:
+            if pygame.mixer.get_init():
+                pygame.mixer.quit()
+        except:
+            pass
+        print("\nAlarm clock stopped.")
+
+    def _get_alarm_status(self, alarm_id: str) -> str:
+        """Get the current status of an alarm."""
+        if alarm_id == self.current_alarm:
+            return "Currently Playing"
+        elif alarm_id in self.stopped_alarms:
+            return f"Stopped at {self.stopped_alarms[alarm_id].strftime('%H:%M:%S')}"
+        elif self.alarms[alarm_id].is_active:
+            return "Active"
+        else:
+            return "Inactive"
 
 
 def print_header():
@@ -216,7 +285,7 @@ def print_commands():
         ("REMOVE", "Remove an alarm", [
             "remove alarm_0"
         ]),
-        ("TOGGLE", "Toggle alarm on/off", [
+        ("TOGGLE", "Toggle an alarm on/off", [
             "toggle alarm_0"
         ]),
         ("START", "Start the alarm clock", [
@@ -256,6 +325,7 @@ def print_commands():
     print("-" * 30)
     print("  • Press any key to stop the alarm sound")
     print("  • Use 'help' command to show this message again")
+    print("  • Live clock display updates every second")
 
     print("\n" + "=" * 50 + "\n")
 
@@ -296,6 +366,7 @@ def main():
                             f"Repeat Days: {', '.join(alarm['repeat_days']) or 'None'}")
                         print(
                             f"Sound File: {alarm['sound_file'] or 'Default'}")
+                        print(f"Status: {alarm['status']}")
                     print("-" * 50)
 
             elif cmd == "add":
@@ -350,6 +421,7 @@ def main():
 
             elif cmd == "stop":
                 alarm_clock.stop()
+                alarm_clock.start()
 
             elif cmd == "stop_sound":
                 if alarm_clock.stop_sound():
