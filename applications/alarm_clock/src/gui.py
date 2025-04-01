@@ -1,11 +1,16 @@
+from applications.alarm_clock.src.alarm_clock import AlarmClock
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt, QTimer, QTime
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QHBoxLayout, QPushButton, QLabel, QTimeEdit,
                              QLineEdit, QComboBox, QListWidget, QMessageBox,
                              QListWidgetItem)
-from PyQt5.QtCore import Qt, QTimer, QTime
-from PyQt5.QtGui import QFont
 import sys
-from alarm_clock import AlarmClock, Alarm
+from pathlib import Path
+
+# Add the project root to Python path
+project_root = Path(__file__).parent.parent.parent
+sys.path.append(str(project_root))
 
 
 class AlarmClockGUI(QMainWindow):
