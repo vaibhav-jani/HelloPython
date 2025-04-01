@@ -1,124 +1,88 @@
 # Alarm Clock Application
 
-A simple command-line alarm clock application that supports multiple alarms, repeating alarms, and custom sound files.
+A Python alarm clock application that allows you to set multiple alarms with custom sounds and repeat options.
 
 ## Features
 
-- Set multiple alarms with descriptions
-- Support for repeating alarms (daily, weekly)
-- Custom sound file support (WAV files)
+- Set multiple alarms with custom descriptions
+- Support for repeating alarms (weekdays, weekends, or custom days)
+- Custom sound file support (WAV format)
+- Live clock display
+- Key press to stop alarm sound
 - Command-line interface
-- Background alarm checking
-- Toggle alarms on/off
-- List all active alarms
+- Graphical User Interface (GUI)
 
 ## Requirements
 
-- Python 3.6 or higher
-- pygame (for sound playback)
-- WAV sound files (optional)
+- Python 3.8 or higher
+- Poetry for dependency management
+- PyQt5 for GUI (optional)
 
 ## Installation
 
-1. Install the required dependencies:
+1. Clone the repository
+2. Install dependencies using Poetry:
    ```bash
-   poetry add pygame
+   poetry install
    ```
 
 ## Usage
 
-Run the application:
+### Command Line Interface
+
+Run the CLI version:
 ```bash
-python src/alarm_clock.py
+python -m src.alarm_clock
 ```
 
-### Available Commands
+Available commands:
+- `add <time> <description> [repeat_days] [sound_file]`: Add a new alarm
+- `list`: List all alarms
+- `remove <alarm_id>`: Remove an alarm
+- `toggle <alarm_id>`: Toggle an alarm on/off
+- `start`: Start the alarm clock
+- `stop`: Stop the alarm clock
+- `stop_sound`: Stop the currently playing sound
+- `help`: Show help message
+- `quit`: Exit the application
 
-1. Add an alarm:
-   ```
-   add <time> <description> [repeat_days] [sound_file]
-   ```
-   Example: `add 07:30 "Wake up"`
+### Graphical User Interface
 
-2. List all alarms:
-   ```
-   list
-   ```
+Run the GUI version:
+```bash
+python -m src.gui
+```
 
-3. Remove an alarm:
-   ```
-   remove <alarm_id>
-   ```
-   Example: `remove alarm_0`
+GUI Features:
+- Live clock display
+- Easy alarm addition with time picker
+- Dropdown for repeat options
+- List view of all alarms with status
+- Start/Stop controls
+- Remove selected alarm
+- Status messages for all actions
 
-4. Toggle alarm on/off:
-   ```
-   toggle <alarm_id>
-   ```
-   Example: `toggle alarm_0`
+## Time Format
 
-5. Start the alarm clock:
-   ```
-   start
-   ```
+- 24-hour: HH:MM (e.g., 07:30)
+- 12-hour: HH:MM AM/PM (e.g., 07:30 AM)
 
-6. Stop the alarm clock:
-   ```
-   stop
-   ```
+## Repeat Days
 
-7. Quit the application:
-   ```
-   quit
-   ```
+- 0 = Monday
+- 1 = Tuesday
+- 2 = Wednesday
+- 3 = Thursday
+- 4 = Friday
+- 5 = Saturday
+- 6 = Sunday
 
-### Time Format
+Example: 0,1,2,3,4 for weekdays
 
-- 24-hour format: `HH:MM` (e.g., `07:30`)
-- 12-hour format: `HH:MM AM/PM` (e.g., `07:30 AM`)
+## Additional Features
 
-### Sound Files
-
-- Supports WAV files for custom alarm sounds
-- If no sound file is specified, uses a simple beep sound
-- Sound playback is handled by pygame for cross-platform compatibility
-
-## Example Usage
-
-1. Start the application:
-   ```bash
-   python src/alarm_clock.py
-   ```
-
-2. Add a wake-up alarm:
-   ```
-   add 07:30 "Wake up for work"
-   ```
-
-3. Add a repeating alarm for weekdays:
-   ```
-   add 09:00 "Daily meeting" 0,1,2,3,4
-   ```
-
-4. List all alarms:
-   ```
-   list
-   ```
-
-5. Toggle an alarm:
-   ```
-   toggle alarm_0
-   ```
-
-6. Remove an alarm:
-   ```
-   remove alarm_1
-   ```
-
-## Notes
-
-- The application runs in the background to check for alarms
-- Press Ctrl+C to stop the application
-- Alarms will trigger at the specified time and play the configured sound
-- For one-time alarms, if the specified time has already passed, the alarm will be set for the next day
-- Custom sound files should be in WAV format for best compatibility 
+- Press any key to stop the alarm sound
+- Use 'help' command to show available commands
+- Live clock display updates every second
+- Status tracking for all alarms
+- Cross-platform compatibility 
